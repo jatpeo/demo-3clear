@@ -16,10 +16,10 @@ import java.sql.SQLException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({SQLException.class})
-    public RespBean sqlException(SQLException e){
+    public RespBean sqlException(SQLException e) {
 //       if (e instanceof MySQLIntegrityConstraintViolationException){
 //           return RespBean.error("该数据有关联数据，操作失败！");
 //       }
-       return RespBean.error("数据库异常，操作失败！");
+        return RespBean.error("数据库异常，操作失败！");
     }
 }

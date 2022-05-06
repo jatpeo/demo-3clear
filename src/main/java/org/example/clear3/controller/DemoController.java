@@ -33,10 +33,11 @@ public class DemoController {
      * @Param
      **/
     @GetMapping("/getAqiMsg")
-    public RespBean getAqiMsg(@RequestParam("type") String type, @RequestParam("value") String value) {
+    public RespBean getAqiMsg(@RequestParam("type") String type,
+                              @RequestParam("value") String value) {
         try {
-            AQIVo vo = demoService.getAqiMsg(type,value);
-            return RespBean.ok(type,vo);
+            AQIVo vo = demoService.getAqiMsg(type, value);
+            return RespBean.ok(type, vo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             String errorMessage = "操作异常...";
@@ -47,23 +48,4 @@ public class DemoController {
         }
     }
 
-    /**
-     * @return
-     * @Author Jiatp  9:59 上午 2022/5/6
-     * @Description //TODO
-     * @Param
-     **/
-    @GetMapping("/test")
-    public RespBean test() {
-        try {
-            return RespBean.ok("你好！");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            String errorMessage = "操作异常...";
-            if (isDev) {
-                errorMessage = e.getMessage();
-            }
-            return RespBean.error(errorMessage);
-        }
-    }
 }

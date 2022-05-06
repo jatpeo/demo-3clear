@@ -2,6 +2,7 @@ package org.example.clear3.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.clear3.domain.vo.AQIVo;
+import org.example.clear3.exception.CustomException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -41,13 +42,18 @@ public class AQlUtils {
      * @Description //TODO 得到24h对应表
      * @Param
      **/
-    public static AQIVo getAQlTable(String type, String value) {
+    public static AQIVo getAQlTable(String type, String value) throws CustomException {
         Map<String, Integer[]> maps = initAqlTable();
         //空气质量分指数
         Integer[] iaqi = maps.get("IAQI");
         Integer[] orgins = maps.get(type);
-        //输入浓度值
-        double c = Double.valueOf(value);
+        double c = 0.0;
+        try {
+            c = Double.valueOf(value);
+        } catch (Exception e) {
+            throw new CustomException("浓度值输入异常!");
+        }
+
         //确定浓度的最大最小
         for (int i = 0; i < orgins.length; i++) {
             if (c <= orgins[i]) {
