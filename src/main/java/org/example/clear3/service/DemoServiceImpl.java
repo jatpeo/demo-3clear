@@ -4,7 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.example.clear3.domain.vo.AQIVo;
 import org.example.clear3.exception.CustomException;
-import org.example.clear3.util.AQITypeEnum;
+import org.example.clear3.enums.AQITypeEnum;
 import org.example.clear3.util.AQlUtils;
 import org.springframework.stereotype.Service;
 

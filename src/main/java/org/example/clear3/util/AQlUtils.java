@@ -2,11 +2,10 @@ package org.example.clear3.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.clear3.domain.vo.AQIVo;
+import org.example.clear3.enums.AQIEnum;
 import org.example.clear3.exception.CustomException;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**

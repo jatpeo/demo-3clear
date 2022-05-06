@@ -1,4 +1,4 @@
-package org.example.clear3.util;
+package org.example.clear3.enums;
 
 /**
  * @Author Jiatp
