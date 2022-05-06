@@ -50,9 +50,11 @@ public class AQlUtils {
         try {
             c = Double.valueOf(value);
         } catch (Exception e) {
-            throw new CustomException("浓度值输入异常!");
+            throw new CustomException("浓度值异常!");
         }
-
+        if (c < orgins[0] || c > orgins[orgins.length - 1]) {
+            throw new CustomException(type + "浓度值不在允许范围之内!");
+        }
         //确定浓度的最大最小
         for (int i = 0; i < orgins.length; i++) {
             if (c <= orgins[i]) {

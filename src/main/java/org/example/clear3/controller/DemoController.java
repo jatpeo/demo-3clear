@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 public class DemoController {
+
     /**
      * 是否为开发模式
      */
