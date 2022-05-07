@@ -1,7 +1,7 @@
 package org.example.clear3.util;
 
 import lombok.extern.slf4j.Slf4j;
-import org.example.clear3.domain.vo.AQIVo;
+import org.example.clear3.domain.vo.AqiVO;
 import org.example.clear3.enums.AQIEnum;
 import org.example.clear3.exception.CustomException;
 
@@ -15,7 +15,7 @@ import java.util.Map;
  * @return
  **/
 @Slf4j
-public class AQlUtils {
+public class AqiUtils {
 
     /**
      * IAQI最大
@@ -41,7 +41,7 @@ public class AQlUtils {
      * @Description //TODO 得到24h对应表
      * @Param
      **/
-    public static AQIVo getAQlTable(String type, String value) throws CustomException {
+    public static AqiVO getAQlTable(String type, String value) throws CustomException {
         Map<String, Integer[]> maps = initAqlTable();
         //空气质量分指数
         Integer[] iaqi = maps.get("IAQI");
@@ -53,6 +53,7 @@ public class AQlUtils {
             throw new CustomException("浓度值异常!");
         }
         if (c < orgins[0] || c > orgins[orgins.length - 1]) {
+            log.error(type + "浓度值不在允许范围之内!");
             throw new CustomException(type + "浓度值不在允许范围之内!");
         }
         //确定浓度的最大最小
@@ -75,7 +76,7 @@ public class AQlUtils {
         double iaqiValue = Math.ceil(a1 / a2 * (c - c_low) + l_low);
         String[] result = AQIEnum.getName(iaqiValue).split(",");
         //封装实体
-        AQIVo aqiVo = new AQIVo();
+        AqiVO aqiVo = new AqiVO();
         aqiVo.setIaqiValue(iaqiValue);
         aqiVo.setLevelDesp(result[0]);
         aqiVo.setLevelColor(result[1]);

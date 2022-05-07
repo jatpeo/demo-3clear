@@ -10,12 +10,12 @@ import lombok.Data;
  * @return
  **/
 @Data
-public class AQIVo {
+public class AqiVO {
 
     /**
      * 污染物对应的IAQI值
      */
-    private Double IaqiValue;
+    private Double iaqiValue;
 
     /**
      * AQi对应的污染等级

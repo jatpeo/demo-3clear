@@ -2,3 +2,18 @@ server:
   port: 8989
 3clearServer:
   dev: true
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: Aa123456
+    url: jdbc:postgresql://192.168.1.148:5432/3clear_test?currentSchema=public
+    platform: postgres
+
+
+#mybatis 配置
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+
+
+

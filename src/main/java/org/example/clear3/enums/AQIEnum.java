@@ -57,13 +57,13 @@ public enum AQIEnum {
     public static String getName(double value) {
         if (value >= 0 && value <= 50) {
             return AQIEnum.GREEN.desc + "," + AQIEnum.GREEN.color + "," + AQIEnum.GREEN.value;
-        } else if (value > 51 && value <= 100) {
+        } else if (value >= 51 && value <= 100) {
             return AQIEnum.YELLOW.desc + "," + AQIEnum.YELLOW.color + "," + AQIEnum.YELLOW.value;
-        } else if (value > 101 && value <= 150) {
+        } else if (value >= 101 && value <= 150) {
             return AQIEnum.ORANGE.desc + "," + AQIEnum.ORANGE.color + "," + AQIEnum.ORANGE.value;
-        } else if (value > 151 && value <= 200) {
+        } else if (value >= 151 && value <= 200) {
             return AQIEnum.RED.desc + "," + AQIEnum.RED.color + "," + AQIEnum.RED.value;
-        } else if (value > 201 && value < 300) {
+        } else if (value >= 201 && value < 300) {
             return AQIEnum.PURPLE.desc + "," + AQIEnum.PURPLE.color + "," + AQIEnum.PURPLE.value;
         } else if (value >= 300) {
             return AQIEnum.MAROON.desc + "," + AQIEnum.MAROON.color + "," + AQIEnum.MAROON.value;
