@@ -27,21 +27,71 @@ public class AqiController {
     private boolean isDev;
 
     @Autowired
-    private AqiService demoService;
+    private AqiService aqiService;
 
+    /**
+     * @param beginTimeStr
+     * @param endTimeStr
+     * @param cityCode
+     * @Description: //TODO 导出城市日均
+     * @Author: Jiatp
+     * @Date: 2022/5/10 4:27 下午
+     * @return: org.example.clear3.util.RespBean
+     */
+    @GetMapping("/exportCityAvg")
+    public RespBean exportCityAvg(@RequestParam("beginTimeStr") String beginTimeStr,
+                                  @RequestParam("endTimeStr") String endTimeStr,
+                                  @RequestParam("cityCode") String cityCode,
+                                  @RequestParam("fileName") String fileName) {
+        try {
+            aqiService.exportCityAvg(beginTimeStr, endTimeStr, cityCode,fileName);
+            return RespBean.ok("导出成功");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            String errorMessage = "操作异常...";
+            if (isDev) {
+                errorMessage = e.getMessage();
+            }
+            return RespBean.error(errorMessage);
+        }
+    }
+
+    /**
+     * @auther: jiatp
+     * @date: 2022/5/9 9:33 上午
+     * @param: beginTimeStr, endTimeStr, citycode
+     * @return: RespBean
+     */
+    @GetMapping("/getCityRateQuery")
+    public RespBean getCityRateQuery(@RequestParam("beginTimeStr") String beginTimeStr,
+                                     @RequestParam("endTimeStr") String endTimeStr,
+                                     @RequestParam("cityCode") String cityCode) {
+        try {
+            List<Map<String, Object>> result = aqiService.getCityRateQuery(beginTimeStr, endTimeStr, cityCode);
+            return RespBean.ok("查询成功", result);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            String errorMessage = "操作异常...";
+            if (isDev) {
+                errorMessage = e.getMessage();
+            }
+            return RespBean.error(errorMessage);
+        }
+    }
 
     /**
      * @return RespBean
      * @Author Jiatp
-     * @Description //TODO
+     * @Description //TODO 计算日均aqi
      * @Date 10:01 上午 2022/5/7
-     * @Param time,city
+     * @Param time, city
      **/
     @GetMapping("/getAqiDayAvg")
-    public RespBean getAqiAvg(@RequestParam("time") String time,
-                              @RequestParam("city") String city) {
+    public RespBean getAqiAvg(@RequestParam("beginTimeStr") String beginTimeStr,
+                              @RequestParam("endTimeStr") String endTimeStr,
+                              @RequestParam("cityCode") String cityCode) {
         try {
-            List<Map<String, Object>> result = demoService.getAqiAvg(time, city);
+            List<Map<String, Object>> result = aqiService.getAqiAvg(beginTimeStr, endTimeStr, cityCode);
             return RespBean.ok("查询成功", result);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -57,14 +107,14 @@ public class AqiController {
     /**
      * @return RespBean
      * @Author Jiatp  10:16 上午 2022/5/6
-     * @Description //TODO
-     * @Param type,value
+     * @Description //TODO 计算aqi信息
+     * @Param type, value
      **/
     @GetMapping("/getAqiMsg")
     public RespBean getAqiMsg(@RequestParam("type") String type,
                               @RequestParam("value") String value) {
         try {
-            AqiVO vo = demoService.getAqiMsg(type, value);
+            AqiVO vo = aqiService.getAqiMsg(type, value);
             return RespBean.ok(type, vo);
         } catch (Exception e) {
             log.error(e.getMessage(), e);

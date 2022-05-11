@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 /**
  * @Author Jiatp
  * @Description //TODO 主启动
- * @Date 5:54 下午 2022/5/7
+ * @Date 7:17 下午 2022/5/7
  **/
 @SpringBootApplication
 @MapperScan("org.example.clear3.mapper")

@@ -11,6 +11,15 @@ import java.util.List;
 public class O3Utils {
 
 
+    /**
+     * 臭氧滑动8最小
+     */
+    private static final int MIN_HOUR = 8;
+
+    /**
+     * 臭氧滑动8最大
+     */
+    private static final int MAX_HOUR = 24;
 
     /**
      * @return List<Double>
@@ -21,7 +30,7 @@ public class O3Utils {
      **/
     public static List<Double> get8Avg(double[] data) {
         List<Double> list = new LinkedList<>();
-        for (int i = 8; i <= 24; i++) {
+        for (int i = O3Utils.MIN_HOUR; i <= O3Utils.MAX_HOUR; i++) {
             int min = i - 8;
             double[] test = new double[8];
             System.arraycopy(data, min, test, 0, 8);
@@ -29,7 +38,7 @@ public class O3Utils {
             for (double m : test) {
                 sum += m;
             }
-            double values = sum / 8;
+            double values = Double.valueOf(ComCalUtil.sciCal(sum / 8,0));
             list.add(values);
         }
         return list;
