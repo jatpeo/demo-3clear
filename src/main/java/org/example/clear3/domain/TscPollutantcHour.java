@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,7 +18,6 @@ import java.util.Date;
 @TableName("t_sc_pollutant_c_hour")
 public class TscPollutantcHour {
 
-    @JsonFormat(locale = "yyyy-MM-dd")
     @TableField("monitordate")
     private Date monitorDate;
 

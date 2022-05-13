@@ -70,7 +70,7 @@ public class DateUtils {
         if (StrUtil.isEmpty(timeStr)) {
             throw new NullPointerException("日期不能为空！");
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         //前一个
         Date time = sdf.parse(timeStr);
         Calendar cal = Calendar.getInstance();
@@ -96,7 +96,7 @@ public class DateUtils {
         if (StrUtil.isEmpty(timeStr)) {
             throw new NullPointerException("日期不能为空！");
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date dt = sdf.parse(timeStr);
         Calendar rightNow = Calendar.getInstance();
         rightNow.setTime(dt);

@@ -131,15 +131,14 @@ public class AqiUtils {
     }
 
 
-
-
     /**
-     * @auther: Jiatp
-     * @desp：// TODO: 重新整理List<map>>数据
-     * @date: 2022/5/9 3:26 下午
-     * @param: @param	null
-     * @return:
+     * @param list
+     * @Description: //TODO 重新整理List<map>>数据 根据日期排序
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:49 上午
+     * @return: java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
      */
+
     public static List<Map<String, Object>> orderMapByDate(List<Map<String, Object>> list) {
         //排序
         if (list != null && list.size() > 1) {
@@ -158,11 +157,11 @@ public class AqiUtils {
     }
 
     /**
-     * @auther: Jiatp
-     * @desp：// TODO: 根据aqi排序
-     * @date: 2022/5/9 6:04 下午
-     * @param: @param	null
-     * @return:
+     * @param list
+     * @Description: //TODO 重新整理List<map>>数据 aqi排序
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:50 上午
+     * @return: java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
      */
     public static List<Map<String, Object>> orderMapByAqi(List<Map<String, Object>> list) {
         //排序
@@ -180,11 +179,11 @@ public class AqiUtils {
     }
 
     /**
-     * @auther: Jiatp
-     * @desp：// TODO:
-     * @date: 2022/5/9 6:25 下午
-     * @param: @param	null
-     * @retun: a
+     * @param list
+     * @Description: //TODO  排名信息
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:50 上午
+     * @return: java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
      */
     public static List<Map<String, Object>> orderMapByLevel(List<Map<String, Object>> list) {
         //排序
@@ -213,11 +212,12 @@ public class AqiUtils {
 
 
     /**
-     * @auther: Jiatp
-     * @desp：// TODO: 计算城市的日均
-     * @date: 2022/5/9 11:47 上午
-     * @param: @param	null
-     * @return:
+     * @param day
+     * @param ts
+     * @Description: //TODO 计算城市的日均
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:50 上午
+     * @return: java.util.Map<java.lang.String, java.lang.Object>
      */
     public static Map<String, Object> getCityDayAvg(String day, List<TscPollutantcHour> ts) throws CustomException, ParseException {
         List<TscPollutantcHour> So2List = ts.stream().filter(o -> o.getSo21hMask().equals(mask)).collect(Collectors.toList());
@@ -230,7 +230,7 @@ public class AqiUtils {
         Map<String, Object> result = new LinkedHashMap<>();
         //so2
         Double totalSo2 = So2List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getSo21h));
-        Double CSo2 = Double.valueOf(ComCalUtil.sciCal(totalSo2/(So2List.size()),0));
+        Double CSo2 = Double.valueOf(ComCalUtil.sciCal(totalSo2 / (So2List.size()), 0));
         //去求iaqi
         AqiVO iaqiSo2 = AqiUtils.getAQlTable("SO2", String.valueOf(CSo2));
         aqiMap.put("SO2", iaqiSo2.getIaqiValue());
@@ -238,7 +238,7 @@ public class AqiUtils {
         result.put("so2_aqi", String.valueOf(iaqiSo2.getIaqiValue()));
         //No2
         Double totalNo2 = No2List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getNo21h));
-        Double CNo2 = Double.valueOf(ComCalUtil.sciCal(totalNo2/(No2List.size()),0));
+        Double CNo2 = Double.valueOf(ComCalUtil.sciCal(totalNo2 / (No2List.size()), 0));
         AqiVO iaqiNo2 = AqiUtils.getAQlTable("NO2", String.valueOf(CNo2));
         aqiMap.put("NO2", iaqiNo2.getIaqiValue());
         result.put("no2", CNo2);
@@ -246,7 +246,7 @@ public class AqiUtils {
 
         //Pm10
         Double totalPm10 = Pm10List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getPm101h));
-        Double CPm10 = Double.valueOf(ComCalUtil.sciCal(totalPm10 / (Pm10List.size()),0));
+        Double CPm10 = Double.valueOf(ComCalUtil.sciCal(totalPm10 / (Pm10List.size()), 0));
         //去求浓度
         AqiVO iaqiPm10 = AqiUtils.getAQlTable("PM10", String.valueOf(CPm10));
         aqiMap.put("PM10", iaqiPm10.getIaqiValue());
@@ -255,7 +255,7 @@ public class AqiUtils {
 
         //Pm25
         Double totalPm25 = Pm25List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getPm251h));
-        Double CPm25 = Double.valueOf(ComCalUtil.sciCal(totalPm25 / (Pm25List.size()),0));
+        Double CPm25 = Double.valueOf(ComCalUtil.sciCal(totalPm25 / (Pm25List.size()), 0));
         //去求浓度
         AqiVO iaqiPm25 = AqiUtils.getAQlTable("PM2.5", String.valueOf(CPm25));
         aqiMap.put("PM25", iaqiPm25.getIaqiValue());
@@ -283,11 +283,7 @@ public class AqiUtils {
         //03 滑动8小时
         List<TscPollutantcHour> collect = O3List.stream().sorted(Comparator.comparing(TscPollutantcHour::getMonitorDate)).collect(Collectors.toList());
         List<Double> O38hList = collect.stream().map(TscPollutantcHour::getO31h).collect(Collectors.toList());
-        Object[] objects = O38hList.toArray();
-        double[] o3Arr = new double[24];
-        for (int i = 0; i < objects.length; i++) {
-            o3Arr[i] = (double) objects[i];
-        }
+        Double[] o3Arr = O38hList.stream().map(Double::valueOf).toArray(Double[]::new);
         List<Double> avg8h = O3Utils.get8Avg(o3Arr);
         Double maxAvg = O3Utils.get8MaxAvg(avg8h);
         result.put("o3_8h_max", maxAvg);
@@ -304,11 +300,13 @@ public class AqiUtils {
     }
 
     /**
-     * @return
-     * @Author Jiatp  11:09 上午 2022/5/6
-     * @Description //TODO 得到24h对应表
-     * @Param
-     **/
+     * @param type
+     * @param value
+     * @Description: //TODO 计算iaqi方法
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:51 上午
+     * @return: org.example.clear3.domain.vo.AqiVO
+     */
     public static AqiVO getAQlTable(String type, String value) throws CustomException {
         Map<String, Integer[]> maps = initAqlTable();
         //空气质量分指数
@@ -317,12 +315,12 @@ public class AqiUtils {
         double c = 0.0;
         try {
             c = Double.valueOf(value);
+            if (c < orgins[0] || c > orgins[orgins.length - 1]) {
+                log.error(type + "浓度值不在允许范围之内!");
+                throw new CustomException(type + "浓度值不在允许范围之内!");
+            }
         } catch (Exception e) {
             throw new CustomException("浓度值异常!");
-        }
-        if (c < orgins[0] || c > orgins[orgins.length - 1]) {
-            log.error(type + "浓度值不在允许范围之内!");
-            throw new CustomException(type + "浓度值不在允许范围之内!");
         }
         //确定浓度的最大最小
         for (int i = 0; i < orgins.length; i++) {
@@ -352,12 +350,14 @@ public class AqiUtils {
         return aqiVo;
     }
 
+
     /**
-     * @return
-     * @Author Jiatp  11:30 上午 2022/5/6
-     * @Description //TODO 初始化24小时
-     * @Param
-     **/
+     * @param
+     * @Description: //TODO 初始化24小时
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:51 上午
+     * @return: java.util.Map<java.lang.String, java.lang.Integer [ ]>
+     */
     public static Map<String, Integer[]> initAqlTable() {
         Map<String, Integer[]> maps = new HashMap<>(7);
         //类型对应24h的值

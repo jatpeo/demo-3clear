@@ -55,6 +55,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
         <!-- easypoi       -->
         <!--        <dependency>-->
         <!--            <groupId>cn.afterturn</groupId>-->
@@ -76,6 +81,8 @@
             <artifactId>poi-ooxml</artifactId>
             <version>3.15</version>
         </dependency>
+
+
 
 
     </dependencies>

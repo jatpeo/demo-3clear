@@ -1,6 +1,5 @@
 package org.example.clear3.service;
 
-import cn.hutool.Hutool;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import lombok.extern.slf4j.Slf4j;
@@ -8,22 +7,21 @@ import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.example.clear3.controller.TestController;
 import org.example.clear3.domain.TscPollutantcHour;
 import org.example.clear3.domain.vo.AqiVO;
-import org.example.clear3.exception.CustomException;
 import org.example.clear3.enums.AQITypeEnum;
+import org.example.clear3.exception.CustomException;
 import org.example.clear3.mapper.TscPollutantcHourMapper;
-import org.example.clear3.util.*;
+import org.example.clear3.util.AqiUtils;
+import org.example.clear3.util.DateUtils;
+import org.example.clear3.util.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -314,34 +312,13 @@ public class AqiServiceImpl implements AqiService {
 
 
     /**
-     * @param city
-     * @param cityRateQuery
-     * @Description: //TODO
+     * @param beginTimeStr
+     * @param endTimeStr
+     * @param cityCode
+     * @Description: //TODO 计算城市变化趋势 环比和同比
      * @Author: Jiatp
-     * @Date: 2022/5/10 6:01 下午
+     * @Date: 2022/5/12 8:48 上午
      * @return: java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
-     */
-    public List<Map<String, Object>> getTry(String city, List<Map<String, Object>> cityRateQuery) {
-
-        List<Map<String, Object>> list = new LinkedList<>();
-        for (int i = 0; i < cityRateQuery.size(); i++) {
-            Map<String, Object> map = cityRateQuery.get(i);
-            String code = map.get("code").toString();
-            if (city.equals(code)) {
-                list.add(map);
-            }
-        }
-        List<Map<String, Object>> maps = AqiUtils.orderMapByDate(list);
-        return maps;
-    }
-
-
-    /**
-     * @auther: Jiatp
-     * @date: 2022/5/9 9:54 上午
-     * @desp: 计算城市变化趋势 环比和同比
-     * @param: beginTimeStr, endTimeStr, citycode
-     * @return: List<Map < String, Object>>
      */
     @Override
     public List<Map<String, Object>> getCityRateQuery(String beginTimeStr, String endTimeStr, String cityCode) throws CustomException, ParseException {
@@ -349,10 +326,6 @@ public class AqiServiceImpl implements AqiService {
         if (StrUtil.isEmpty(beginTimeStr) || StrUtil.isEmpty(endTimeStr)) {
             throw new CustomException("开始时间和结束时间不能为空！");
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date beginTime = sdf.parse(beginTimeStr);
-        Date endTime = sdf.parse(endTimeStr);
-
         if (StrUtil.isEmpty(cityCode)) {
             throw new CustomException("城市编码不能为空！");
         }
@@ -378,12 +351,14 @@ public class AqiServiceImpl implements AqiService {
 
 
     /**
-     * @return List<Map < String, Object>>
-     * @Author Jiatp
-     * @Description //TODO 计算多城市日均
-     * @Date 3:31 下午 2022/5/7
-     * @Param timeRange, cityCode
-     **/
+     * @param beginTimeStr
+     * @param endTimeStr
+     * @param cityCode
+     * @Description: //TODO 计算多城市日均
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:48 上午
+     * @return: java.util.List<java.util.Map < java.lang.String, java.lang.Object>>
+     */
     @Override
     public List<Map<String, Object>> getAqiAvg(String beginTimeStr, String endTimeStr, String cityCode)
             throws CustomException, ParseException {
@@ -391,9 +366,6 @@ public class AqiServiceImpl implements AqiService {
         if (StrUtil.isEmpty(beginTimeStr) || StrUtil.isEmpty(endTimeStr)) {
             throw new CustomException("开始时间和结束时间不能为空！");
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date beginTime = sdf.parse(beginTimeStr);
-        Date endTime = sdf.parse(endTimeStr);
         if (StrUtil.isEmpty(cityCode)) {
             throw new CustomException("城市编码不能为空！");
         }
@@ -401,7 +373,7 @@ public class AqiServiceImpl implements AqiService {
         //select
         QueryWrapper<TscPollutantcHour> wrapper = new QueryWrapper<>();
         wrapper.in("citycode", citys);
-        wrapper.between("monitordate", beginTime, endTime);
+        wrapper.between("monitordate", Timestamp.valueOf(beginTimeStr), Timestamp.valueOf(endTimeStr));
         List<TscPollutantcHour> tscPollutantcHours = tScPollutantcHourMapper.selectList(wrapper);
         //按照城市分组
         Map<String, List<TscPollutantcHour>> groupMap = tscPollutantcHours.stream().collect(Collectors.groupingBy(TscPollutantcHour::getCityCode));
@@ -416,7 +388,7 @@ public class AqiServiceImpl implements AqiService {
             for (Map.Entry<String, List<TscPollutantcHour>> entry2 : collect.entrySet()) {
                 log.info("key= " + entry2.getKey() + " and value= " + entry2.getValue());
                 //当天
-                String day = entry2.getKey();
+                String day = entry2.getKey()+" 00:00:00";
                 List<TscPollutantcHour> ts = entry2.getValue();
                 Map<String, Object> result = AqiUtils.getCityDayAvg(day, ts);
                 result.put("code", city);
@@ -430,12 +402,13 @@ public class AqiServiceImpl implements AqiService {
 
 
     /**
-     * @return AqiVO
-     * @Author Jiatp
-     * @Description //TODO  计算所对应污染物的信息
-     * @Date 10:34 上午 2022/5/6
-     * @Param type, value
-     **/
+     * @param type
+     * @param value
+     * @Description: //TODO 计算所对应污染物的信息
+     * @Author: Jiatp
+     * @Date: 2022/5/12 8:48 上午
+     * @return: org.example.clear3.domain.vo.AqiVO
+     */
     @Override
     public AqiVO getAqiMsg(String type, String value) throws CustomException {
         if (StrUtil.isBlank(type)) {
