@@ -1,35 +1,31 @@
 package org.example.clear3.controller;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.example.clear3.domain.param.BaseQueryParam;
 import org.example.clear3.domain.param.DayAverageParam;
 import org.example.clear3.domain.param.SingleTypeParam;
 import org.example.clear3.domain.param.TimeCompareParam;
-import org.example.clear3.service.TscPollutantcService;
+import org.example.clear3.service.MonitorService;
 import org.example.clear3.util.RespBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 /**
  * @Author Jiatp
- * @Description //TODO
+ * @Description //TODO 实测功能模块下
  * @Date 7:28 下午 2022/5/6
  **/
 @Slf4j
 @RestController
 @RequestMapping("/tscPh")
-public class TscPollutantcController {
+public class MonitorController {
 
     /**
      * 是否为开发模式
@@ -37,9 +33,16 @@ public class TscPollutantcController {
     @Value("${3clearServer.dev}")
     private boolean isDev;
     @Autowired
-    TscPollutantcService pollutantcService;
+    MonitorService pollutantcService;
 
 
+    /**
+     * @Description: //TODO 时段对比分析查询
+     * @Author: Jiatp
+     * @Date: 2022/5/16 4:02 下午
+     * @param param 查询参数
+     * @return: org.example.clear3.util.RespBean
+     */
     @GetMapping("/timeCompareAnalyzeQuery")
     public RespBean timeCompareAnalyzeQuery(@Valid @RequestBody TimeCompareParam param) {
         try {
@@ -59,7 +62,7 @@ public class TscPollutantcController {
      * @Description: //TODO 计算多城市单个指标的浓度值和iaqi
      * @Author: Jiatp
      * @Date: 2022/5/12 7:40 下午
-     * @param param
+     * @param param 查询参数
      * @return: org.example.clear3.util.RespBean
      */
     @GetMapping("/queryPollutionType")
@@ -77,10 +80,10 @@ public class TscPollutantcController {
         }
     }
     /**
-     * @Description: //TODO 基于小时查询多城市的日均值 （新）
+     * @Description: //TODO 查询多城市的日均值 （新）
      * @Author: Jiatp
      * @Date: 2022/5/13 5:21 下午
-     * @param param
+     * @param param 查询参数
      * @return: org.example.clear3.util.RespBean
      */
     @GetMapping("/queryDayAverage")

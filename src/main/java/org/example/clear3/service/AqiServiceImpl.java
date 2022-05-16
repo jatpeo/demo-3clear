@@ -18,8 +18,10 @@ import org.example.clear3.util.ExcelUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.FileOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.*;
@@ -34,32 +36,27 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AqiServiceImpl implements AqiService {
 
+    private static final String primaryPollutant = "primary_pollutant";
+
 
     @Autowired
     TscPollutantcHourMapper tScPollutantcHourMapper;
 
     /**
-     * @param beginTimeStr
-     * @param endTimeStr
-     * @param cityCode
+     * @param beginTimeStr 开始时间
+     * @param endTimeStr   结束时间
+     * @param cityCode     城市编码
+     * @param fileName     文件名称
+     * @param response     响应对象
      * @Description: //TODO 导出城市变化趋势
      * @Author: Jiatp
-     * @Date: 2022/5/10 4:28 下午
+     * @Date: 2022/5/16 4:42 下午
      */
     @Override
-    public void exportCityAvg(String beginTimeStr, String endTimeStr, String cityCode, String fileName) throws CustomException, ParseException, IOException {
+    public void exportCityAvg(String beginTimeStr, String endTimeStr, String cityCode, String fileName, HttpServletResponse response) throws CustomException, ParseException, IOException {
 
-        if (StrUtil.isEmpty(beginTimeStr)) {
-            throw new CustomException("开始时间不能为空");
-        }
-        if (StrUtil.isEmpty(endTimeStr)) {
-            throw new CustomException("结束时间不能为空");
-        }
-        if (StrUtil.isEmpty(cityCode)) {
-            throw new CustomException("城市编码不能为空");
-        }
-        if (StrUtil.isEmpty(fileName)) {
-            throw new CustomException("文件名称不能为空");
+        if (StrUtil.isEmpty(beginTimeStr) || StrUtil.isEmpty(endTimeStr) || StrUtil.isEmpty(cityCode) || StrUtil.isEmpty(fileName)) {
+            throw new NullPointerException("查询参数不能为空");
         }
         //get List
         List<Map<String, Object>> cityRateQuery = getCityRateQuery(beginTimeStr, endTimeStr, cityCode);
@@ -73,15 +70,16 @@ public class AqiServiceImpl implements AqiService {
         font.setBold(true);
         font.setColor(IndexedColors.BLACK.getIndex());
         style.setFont(font);
-        style.setAlignment(XSSFCellStyle.ALIGN_CENTER); //文字水平居中
+        style.setAlignment(XSSFCellStyle.ALIGN_CENTER);
         style.setBorderTop(BorderStyle.THIN);
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
         HSSFCellStyle style2 = wb.createCellStyle();
-        style2.setAlignment(XSSFCellStyle.ALIGN_CENTER); //文字水平居中
-        style2.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);//文字垂直居中
-
+        //文字水平居中
+        style2.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+        //文字垂直居中
+        style2.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
         HSSFRow row = sheet.createRow(0);
         HSSFCell cell1 = row.createCell(0);
         HSSFCell cell2 = row.createCell(1);
@@ -98,8 +96,6 @@ public class AqiServiceImpl implements AqiService {
             cell.setCellStyle(style);
         }
         List<String> citys = Arrays.asList(cityCode.split(","));
-
-
         //column
         Row rows1 = null;
         Row rows2 = null;
@@ -109,7 +105,48 @@ public class AqiServiceImpl implements AqiService {
         Row rows6 = null;
         Row rows7 = null;
         Row rows8 = null;
+        //生成单元格值
+        setTitleCellValue(wb, cityRateQuery, rows1, rows2, rows3, rows4, rows5, rows6, rows7, rows8, sheet, citys, days, style, style2);
+        OutputStream outputStream = null;
+        String filenamedisplay = URLEncoder.encode(fileName.toString(), "UTF-8") + ".xls";
+        // 重置响应对象
+        response.reset();
+        // 指定下载的文件名--设置响应头
+        response.setContentType("application/x-download;charset=utf-8");
+        response.setHeader("Content-disposition", "attachment;filename=" + filenamedisplay);
+        outputStream = response.getOutputStream();
+        wb.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
 
+        OutputStream output = response.getOutputStream();
+        wb.write(output);
+        output.close();
+
+    }
+
+    /**
+     * @param wb            wb对象
+     * @param cityRateQuery 查询结果
+     * @param rows1         aqi
+     * @param rows2         so2
+     * @param rows3         no2
+     * @param rows4         co
+     * @param rows5         pm10
+     * @param rows6         pm2.5
+     * @param rows7         o3
+     * @param rows8         首污
+     * @param sheet         sheet对象
+     * @param citys         城市集合
+     * @param days          天数集合
+     * @param style         样式1
+     * @param style2        样式2
+     * @Description: //TODO
+     * @Author: Jiatp
+     * @Date: 2022/5/16 6:35 下午
+     */
+    void setTitleCellValue(HSSFWorkbook wb, List<Map<String, Object>> cityRateQuery, Row rows1, Row rows2, Row rows3, Row rows4, Row rows5,
+                           Row rows6, Row rows7, Row rows8, Sheet sheet, List<String> citys, List<String> days, HSSFCellStyle style, HSSFCellStyle style2) {
         List<String> comparp = Arrays.asList("aqi", "so2", "no2", "co", "pm10", "pm2.5", "primary_pollutant", "o3");
         for (int a = 1; a <= citys.size(); a++) {
             rows1 = sheet.createRow(((a - 1) * 8 + 1));
@@ -159,51 +196,14 @@ public class AqiServiceImpl implements AqiService {
                         rows8.getCell(1).setCellStyle(style);
                         break;
                 }
-
             }
             //给每个单元格赋值
             for (int i = 2; i < days.size() + 2; i++) {
                 String code = citys.get(a - 1);
                 String day = days.get(i - 2);
                 for (String str : comparp) {
-                    switch (str) {
-                        case "aqi":
-                            String[] value1 = getExcelCellValue(code, day, str, cityRateQuery);
-                            transCell(wb, value1, i, rows1, str);
-                            break;
-                        case "so2":
-                            String[] value2 = getExcelCellValue(code, day, "so2", cityRateQuery);
-                            transCell(wb, value2, i, rows2, "so2");
-                            break;
-                        case "no2":
-                            String[] value3 = getExcelCellValue(code, day, "no2", cityRateQuery);
-                            transCell(wb, value3, i, rows3, "no2");
-                            break;
-                        case "co":
-                            String[] value4 = getExcelCellValue(code, day, "co", cityRateQuery);
-                            transCell(wb, value4, i, rows4, "co");
-                            break;
-                        case "pm10":
-                            String[] value5 = getExcelCellValue(code, day, "pm10", cityRateQuery);
-                            transCell(wb, value5, i, rows5, "pm10");
-                            break;
-                        case "pm2.5":
-                            String[] value6 = getExcelCellValue(code, day, "pm2.5", cityRateQuery);
-                            transCell(wb, value6, i, rows6, "pm2.5");
-                            break;
-                        case "o3":
-                            String[] value7 = getExcelCellValue(code, day, "o3", cityRateQuery);
-                            transCell(wb, value7, i, rows7, "o3");
-                            break;
-                        case "primary_pollutant":
-                            String[] value8 = getExcelCellValue(code, day, "primary_pollutant", cityRateQuery);
-                            transCell(wb, value8, i, rows8, "primary_pollutant");
-                            break;
-
-                    }
-
+                    setCellValue(cityRateQuery, wb, rows1, rows2, rows3, rows4, rows5, rows6, rows7, rows8, i, code, day, str);
                 }
-
             }
             //合并好居中显示
             int firstRow = ((a - 1) * 8 + 1);
@@ -213,11 +213,76 @@ public class AqiServiceImpl implements AqiService {
             sheet.getRow(firstRow).getCell(0).setCellStyle(style2);
 
         }
-        FileOutputStream out = new FileOutputStream("/Users/jiatp/study/work/" + fileName + "-" + System.currentTimeMillis() + ".xls");
-        wb.write(out);
-        //流的关闭
-        out.close();
+    }
 
+    void doCreateCellValue(String comp, Map map, HSSFCellStyle style, Sheet sheet, String citycode, int inex) {
+        Row row = (Row) map.get(comp);
+        if ("aqi".equals(comp)) {
+            row.createCell(0).setCellValue(citycode);
+        } else {
+            row = sheet.createRow(inex);
+            row.createCell(1).setCellValue(comp.toUpperCase());
+            row.getCell(1).setCellStyle(style);
+        }
+
+    }
+
+    /**
+     * @param cityRateQuery 查询结果
+     * @param wb            wb对象
+     * @param rows1         aqi
+     * @param rows2         so2
+     * @param rows3         no2
+     * @param rows4         co
+     * @param rows5         pm10
+     * @param rows6         pm2.5
+     * @param rows7         o3
+     * @param rows8         首污
+     * @param i
+     * @param code          城市编码
+     * @param day           天
+     * @param str           判读
+     * @Description: //TODO
+     * @Author: Jiatp
+     * @Date: 2022/5/16 6:24 下午
+     */
+    private void setCellValue(List<Map<String, Object>> cityRateQuery, HSSFWorkbook wb, Row rows1, Row rows2,
+                              Row rows3, Row rows4, Row rows5, Row rows6, Row rows7, Row rows8, int i,
+                              String code, String day, String str) {
+        switch (str) {
+            case "aqi":
+                String[] value1 = getExcelCellValue(code, day, str, cityRateQuery);
+                transCell(wb, value1, i, rows1, str);
+                return;
+            case "so2":
+                String[] value2 = getExcelCellValue(code, day, "so2", cityRateQuery);
+                transCell(wb, value2, i, rows2, "so2");
+                break;
+            case "no2":
+                String[] value3 = getExcelCellValue(code, day, "no2", cityRateQuery);
+                transCell(wb, value3, i, rows3, "no2");
+                break;
+            case "co":
+                String[] value4 = getExcelCellValue(code, day, "co", cityRateQuery);
+                transCell(wb, value4, i, rows4, "co");
+                break;
+            case "pm10":
+                String[] value5 = getExcelCellValue(code, day, "pm10", cityRateQuery);
+                transCell(wb, value5, i, rows5, "pm10");
+                break;
+            case "pm2.5":
+                String[] value6 = getExcelCellValue(code, day, "pm2.5", cityRateQuery);
+                transCell(wb, value6, i, rows6, "pm2.5");
+                break;
+            case "o3":
+                String[] value7 = getExcelCellValue(code, day, "o3", cityRateQuery);
+                transCell(wb, value7, i, rows7, "o3");
+                break;
+            case "primary_pollutant":
+                String[] value8 = getExcelCellValue(code, day, "primary_pollutant", cityRateQuery);
+                transCell(wb, value8, i, rows8, "primary_pollutant");
+                break;
+        }
     }
 
 
@@ -232,7 +297,7 @@ public class AqiServiceImpl implements AqiService {
      * @return: org.apache.poi.ss.usermodel.Cell
      */
     public void transCell(HSSFWorkbook wb, String[] value, int i, Row row, String type) {
-        if ("primary_pollutant".equals(type)) {
+        if (primaryPollutant.equals(type)) {
             //单独处理首污的背景颜色
             HSSFCellStyle style = ExcelUtils.fillPrimaryPolColor(wb, value[0]);
             Cell cell = row.createCell(i);
@@ -261,7 +326,7 @@ public class AqiServiceImpl implements AqiService {
         String[] str = null;
         for (Map<String, Object> map : cityRateQuery) {
             String code = map.get("code").toString();
-            String datadate = map.get("datadate").toString();
+            String datadate = map.get("datadate").toString().split(" ")[0];
             if (cityCode.equals(code) && day.equals(datadate)) {
                 switch (type) {
                     case "aqi":
@@ -323,11 +388,8 @@ public class AqiServiceImpl implements AqiService {
     @Override
     public List<Map<String, Object>> getCityRateQuery(String beginTimeStr, String endTimeStr, String cityCode) throws CustomException, ParseException {
 
-        if (StrUtil.isEmpty(beginTimeStr) || StrUtil.isEmpty(endTimeStr)) {
-            throw new CustomException("开始时间和结束时间不能为空！");
-        }
-        if (StrUtil.isEmpty(cityCode)) {
-            throw new CustomException("城市编码不能为空！");
+        if (StrUtil.isEmpty(beginTimeStr) || StrUtil.isEmpty(endTimeStr) || StrUtil.isEmpty(cityCode)) {
+            throw new CustomException("参数不能为空！");
         }
         List<Map<String, Object>> currentCityDayAvg = getAqiAvg(beginTimeStr, endTimeStr, cityCode);
         //2 计算同比
@@ -388,7 +450,7 @@ public class AqiServiceImpl implements AqiService {
             for (Map.Entry<String, List<TscPollutantcHour>> entry2 : collect.entrySet()) {
                 log.info("key= " + entry2.getKey() + " and value= " + entry2.getValue());
                 //当天
-                String day = entry2.getKey()+" 00:00:00";
+                String day = entry2.getKey() + " 00:00:00";
                 List<TscPollutantcHour> ts = entry2.getValue();
                 Map<String, Object> result = AqiUtils.getCityDayAvg(day, ts);
                 result.put("code", city);
@@ -421,7 +483,7 @@ public class AqiServiceImpl implements AqiService {
         if (AQITypeEnum.unKnow.getName().equals(name)) {
             throw new CustomException("污染物类型未知！");
         }
-        AqiVO aQlTable = AqiUtils.getAQlTable(type, value);
+        AqiVO aQlTable = AqiUtils.getAqiValue(type, value);
         return aQlTable;
     }
 }

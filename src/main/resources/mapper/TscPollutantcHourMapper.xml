@@ -146,19 +146,22 @@
 
     <select id="queryDayAverage" resultType="java.util.Map">
         SELECT
+        wr.cityname,
+        wr.citycode,
+        ch.monitordate,
         <choose>
             <when test="params.target!=null">
-                ${params.target}
+                ch.${params.target}
             </when>
             <otherwise>
                 <include refid="Base_Column_List"></include>
             </otherwise>
         </choose>
         FROM
-        t_sc_pollutant_c_hour
+        t_sc_pollutant_c_hour ch lefT join city_weather_relation wr on ch.citycode = wr.citycode
         <where>
             <if test="params.cityCode!=null and params.cityCode!=''">
-                citycode in
+                ch.citycode in
                 <foreach item="item" index="index" collection="params.cityCode.split(',')" open="(" separator=","
                          close=")">
                     #{item}
@@ -166,16 +169,42 @@
             </if>
             <if test="params.target!=null and params.target!=''">
                 <foreach item="item" index="index" collection="params.target.split(',')" separator="" open="" close="">
-                    AND ${item}_mask = 'yes'
+                    AND ch.${item}_mask = 'yes'
                 </foreach>
             </if>
             <if test="params.beginTimeStr!=null and params.beginTimeStr!=''">
-                AND monitordate&gt;=#{params.beginTimeStr}::TIMESTAMP
+                AND ch.monitordate&gt;=#{params.beginTimeStr}::TIMESTAMP
             </if>
             <if test="params.endTimeStr!=null and params.endTimeStr!=''">
-                AND monitordate&lt;=#{params.endTimeStr}::TIMESTAMP
+                AND ch. monitordate&lt;=#{params.endTimeStr}::TIMESTAMP
             </if>
+        </where>
+    </select>
 
+    <select id="cityPredictionByTimeQuery" resultType="java.util.Map">
+        SELECT
+        tr.datadate,
+        cr.cityname,
+        <if test="params.target!=null and params.target!=''">
+            <foreach item="item" index="index" collection="params.target.split(',')" separator="," open="" close="">
+                tr.${item}
+            </foreach>
+        </if>
+        FROM
+        ${params.tableName} tr LEFT JOIN city_weather_relation cr on tr.citycode = cr.citycode
+        <where>
+            <if test="params.cityCode!=null and params.cityCode!=''">
+                AND tr.citycode = #{params.cityCode}
+            </if>
+            <if test="params.predictionTime!=null and params.predictionTime!=''">
+                AND tr.predictiontime = #{params.predictionTime}::TIMESTAMP
+            </if>
+            <if test="params.startDataDate!=null and params.startDataDate!=''">
+                AND tr.datadate &gt;= #{params.startDataDate}::TIMESTAMP
+            </if>
+            <if test="params.endDataDate!=null and params.endDataDate!=''">
+                AND tr.datadate &lt; #{params.endDataDate}::TIMESTAMP
+            </if>
 
         </where>
 

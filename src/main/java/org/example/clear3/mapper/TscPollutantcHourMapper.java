@@ -3,10 +3,10 @@ package org.example.clear3.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.example.clear3.domain.TscPollutantcHour;
-import org.example.clear3.domain.param.BaseQueryParam;
 import org.example.clear3.domain.param.DayAverageParam;
 import org.example.clear3.domain.param.SingleTypeParam;
 import org.example.clear3.domain.param.TimeCompareParam;
+import org.example.clear3.domain.vo.CityPredictionTimeVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -48,4 +48,13 @@ public interface TscPollutantcHourMapper extends BaseMapper<TscPollutantcHour> {
      * @return: java.util.List<java.util.Map>
      */
     List<Map> queryDayAverage(@Param("params") DayAverageParam params);
+
+    /**
+     * @param cityPredictionTimeVO
+     * @Description: TODO 城市逐日预报查询
+     * @Author: Jiatp
+     * @Date: 2022/5/16 12:03 下午
+     * @return: java.util.List<java.util.Map>
+     */
+    List<Map> cityPredictionByTimeQuery(@Param("params") CityPredictionTimeVO cityPredictionTimeVO);
 }

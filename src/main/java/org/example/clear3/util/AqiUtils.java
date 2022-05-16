@@ -1,5 +1,6 @@
 package org.example.clear3.util;
 
+import cn.hutool.core.map.MapUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.example.clear3.domain.TscPollutantcHour;
 import org.example.clear3.domain.vo.AqiVO;
@@ -87,38 +88,38 @@ public class AqiUtils {
                     double pm10L = (double) last.get("pm10");
                     double pm25L = (double) last.get("pm25");
                     double coL = (double) last.get("co");
-                    double o3L = (double) last.get("co");
+                    double o3L = (double) last.get("o3");
                     //计算
-                    String s02_rate = null;
-                    String n02_rate = null;
-                    String pm10_rate = null;
-                    String pm25_rate = null;
-                    String co_rate = null;
-                    String o3_rate = null;
+                    String s02Rate = null;
+                    String n02Rate = null;
+                    String pm10Rate = null;
+                    String pm25Rate = null;
+                    String coRate = null;
+                    String o3Rate = null;
                     if (AqiUtils.TYPE_A.equals(type)) {
                         //计算同比月
-                        s02_rate = ComCalUtil.calMonthOver(so2C, so2L);
-                        n02_rate = ComCalUtil.calMonthOver(no2C, no2L);
-                        pm10_rate = ComCalUtil.calMonthOver(pm10C, pm10L);
-                        pm25_rate = ComCalUtil.calMonthOver(pm25C, pm25L);
-                        co_rate = ComCalUtil.calMonthOver(coC, coL);
-                        o3_rate = ComCalUtil.calMonthOver(o3C, o3L);
+                        s02Rate = ComCalUtil.calMonthOver(so2C, so2L);
+                        n02Rate = ComCalUtil.calMonthOver(no2C, no2L);
+                        pm10Rate = ComCalUtil.calMonthOver(pm10C, pm10L);
+                        pm25Rate = ComCalUtil.calMonthOver(pm25C, pm25L);
+                        coRate = ComCalUtil.calMonthOver(coC, coL);
+                        o3Rate = ComCalUtil.calMonthOver(o3C, o3L);
                     } else if (AqiUtils.TYPE_B.equals(type)) {
                         //计算环比日
-                        s02_rate = ComCalUtil.calDayOver(so2C, so2L);
-                        n02_rate = ComCalUtil.calDayOver(no2C, no2L);
-                        pm10_rate = ComCalUtil.calDayOver(pm10C, pm10L);
-                        pm25_rate = ComCalUtil.calDayOver(pm25C, pm25L);
-                        co_rate = ComCalUtil.calDayOver(coC, coL);
-                        o3_rate = ComCalUtil.calDayOver(o3C, o3L);
+                        s02Rate = ComCalUtil.calDayOver(so2C, so2L);
+                        n02Rate = ComCalUtil.calDayOver(no2C, no2L);
+                        pm10Rate = ComCalUtil.calDayOver(pm10C, pm10L);
+                        pm25Rate = ComCalUtil.calDayOver(pm25C, pm25L);
+                        coRate = ComCalUtil.calDayOver(coC, coL);
+                        o3Rate = ComCalUtil.calDayOver(o3C, o3L);
                     }
                     //set
-                    curr.put("s02rate_" + type.toLowerCase(), s02_rate);
-                    curr.put("n02rate_" + type.toLowerCase(), n02_rate);
-                    curr.put("pm10rate_" + type.toLowerCase(), pm10_rate);
-                    curr.put("pm25rate_" + type.toLowerCase(), pm25_rate);
-                    curr.put("corate_" + type.toLowerCase(), co_rate);
-                    curr.put("o3rate_" + type.toLowerCase(), o3_rate);
+                    curr.put("s02rate_" + type.toLowerCase(), s02Rate);
+                    curr.put("n02rate_" + type.toLowerCase(), n02Rate);
+                    curr.put("pm10rate_" + type.toLowerCase(), pm10Rate);
+                    curr.put("pm25rate_" + type.toLowerCase(), pm25Rate);
+                    curr.put("corate_" + type.toLowerCase(), coRate);
+                    curr.put("o3rate_" + type.toLowerCase(), o3Rate);
                     maps.add(curr);
                 } else {
                     continue;
@@ -220,68 +221,68 @@ public class AqiUtils {
      * @return: java.util.Map<java.lang.String, java.lang.Object>
      */
     public static Map<String, Object> getCityDayAvg(String day, List<TscPollutantcHour> ts) throws CustomException, ParseException {
-        List<TscPollutantcHour> So2List = ts.stream().filter(o -> o.getSo21hMask().equals(mask)).collect(Collectors.toList());
-        List<TscPollutantcHour> No2List = ts.stream().filter(o -> o.getNo21hMask().equals(mask)).collect(Collectors.toList());
-        List<TscPollutantcHour> Pm10List = ts.stream().filter(o -> o.getPm101hMask().equals(mask)).collect(Collectors.toList());
-        List<TscPollutantcHour> Pm25List = ts.stream().filter(o -> o.getPm251hMask().equals(mask)).collect(Collectors.toList());
-        List<TscPollutantcHour> CoList = ts.stream().filter(o -> o.getCo1hMask().equals(mask)).collect(Collectors.toList());
-        List<TscPollutantcHour> O3List = ts.stream().filter(o -> o.getO31hMask().equals(mask)).collect(Collectors.toList());
-        Map<String, Double> aqiMap = new HashMap<>();
-        Map<String, Object> result = new LinkedHashMap<>();
+        List<TscPollutantcHour> so2List = ts.stream().filter(o -> o.getSo21hMask().equals(mask)).collect(Collectors.toList());
+        List<TscPollutantcHour> no2List = ts.stream().filter(o -> o.getNo21hMask().equals(mask)).collect(Collectors.toList());
+        List<TscPollutantcHour> pm10List = ts.stream().filter(o -> o.getPm101hMask().equals(mask)).collect(Collectors.toList());
+        List<TscPollutantcHour> pm25List = ts.stream().filter(o -> o.getPm251hMask().equals(mask)).collect(Collectors.toList());
+        List<TscPollutantcHour> coList = ts.stream().filter(o -> o.getCo1hMask().equals(mask)).collect(Collectors.toList());
+        List<TscPollutantcHour> o3List = ts.stream().filter(o -> o.getO31hMask().equals(mask)).collect(Collectors.toList());
+        Map<String, Double> aqiMap = MapUtil.createMap(HashMap.class);
+        Map<String, Object> result = MapUtil.createMap(LinkedHashMap.class);
         //so2
-        Double totalSo2 = So2List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getSo21h));
-        Double CSo2 = Double.valueOf(ComCalUtil.sciCal(totalSo2 / (So2List.size()), 0));
+        Double totalSo2 = so2List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getSo21h));
+        Double CSo2 = Double.valueOf(ComCalUtil.sciCal(totalSo2 / (so2List.size()), 0));
         //去求iaqi
-        AqiVO iaqiSo2 = AqiUtils.getAQlTable("SO2", String.valueOf(CSo2));
+        AqiVO iaqiSo2 = AqiUtils.getAqiValue("SO2", String.valueOf(CSo2));
         aqiMap.put("SO2", iaqiSo2.getIaqiValue());
         result.put("so2", CSo2);
         result.put("so2_aqi", String.valueOf(iaqiSo2.getIaqiValue()));
         //No2
-        Double totalNo2 = No2List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getNo21h));
-        Double CNo2 = Double.valueOf(ComCalUtil.sciCal(totalNo2 / (No2List.size()), 0));
-        AqiVO iaqiNo2 = AqiUtils.getAQlTable("NO2", String.valueOf(CNo2));
+        Double totalNo2 = no2List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getNo21h));
+        Double CNo2 = Double.valueOf(ComCalUtil.sciCal(totalNo2 / (no2List.size()), 0));
+        AqiVO iaqiNo2 = AqiUtils.getAqiValue("NO2", String.valueOf(CNo2));
         aqiMap.put("NO2", iaqiNo2.getIaqiValue());
         result.put("no2", CNo2);
         result.put("no2_aqi", String.valueOf(iaqiNo2.getIaqiValue()));
 
         //Pm10
-        Double totalPm10 = Pm10List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getPm101h));
-        Double CPm10 = Double.valueOf(ComCalUtil.sciCal(totalPm10 / (Pm10List.size()), 0));
+        Double totalPm10 = pm10List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getPm101h));
+        Double CPm10 = Double.valueOf(ComCalUtil.sciCal(totalPm10 / (pm10List.size()), 0));
         //去求浓度
-        AqiVO iaqiPm10 = AqiUtils.getAQlTable("PM10", String.valueOf(CPm10));
+        AqiVO iaqiPm10 = AqiUtils.getAqiValue("PM10", String.valueOf(CPm10));
         aqiMap.put("PM10", iaqiPm10.getIaqiValue());
         result.put("pm10", CPm10);
         result.put("pm10_aqi", String.valueOf(iaqiPm10.getIaqiValue()));
 
         //Pm25
-        Double totalPm25 = Pm25List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getPm251h));
-        Double CPm25 = Double.valueOf(ComCalUtil.sciCal(totalPm25 / (Pm25List.size()), 0));
+        Double totalPm25 = pm25List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getPm251h));
+        Double CPm25 = Double.valueOf(ComCalUtil.sciCal(totalPm25 / (pm25List.size()), 0));
         //去求浓度
-        AqiVO iaqiPm25 = AqiUtils.getAQlTable("PM2.5", String.valueOf(CPm25));
+        AqiVO iaqiPm25 = AqiUtils.getAqiValue("PM2.5", String.valueOf(CPm25));
         aqiMap.put("PM25", iaqiPm25.getIaqiValue());
         result.put("pm25", CPm25);
         result.put("pm25_aqi", String.valueOf(iaqiPm25.getIaqiValue()));
 
         //CO
-        Double totalCo = CoList.stream().collect(Collectors.summingDouble(TscPollutantcHour::getCo1h));
-        Double Cco = totalCo / (CoList.size());
+        Double totalCo = coList.stream().collect(Collectors.summingDouble(TscPollutantcHour::getCo1h));
+        Double Cco = totalCo / (coList.size());
         //去求浓度
-        AqiVO iaqiCo = AqiUtils.getAQlTable("CO", String.valueOf(Cco));
+        AqiVO iaqiCo = AqiUtils.getAqiValue("CO", String.valueOf(Cco));
         aqiMap.put("CO", iaqiCo.getIaqiValue());
         result.put("co", Math.ceil(Cco));
         result.put("co_aqi", String.valueOf(iaqiCo.getIaqiValue()));
 
         //O3
-        Double totalO3 = O3List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getO31h));
-        Double Co3 = totalO3 / (O3List.size());
+        Double totalO3 = o3List.stream().collect(Collectors.summingDouble(TscPollutantcHour::getO31h));
+        Double Co3 = totalO3 / (o3List.size());
         //去求浓度
-        AqiVO iaqiO3 = AqiUtils.getAQlTable("O3", String.valueOf(Co3));
+        AqiVO iaqiO3 = AqiUtils.getAqiValue("O3", String.valueOf(Co3));
         aqiMap.put("O3", iaqiO3.getIaqiValue());
         result.put("o3", Math.ceil(Co3));
         result.put("o3_aqi", String.valueOf(iaqiO3.getIaqiValue()));
 
         //03 滑动8小时
-        List<TscPollutantcHour> collect = O3List.stream().sorted(Comparator.comparing(TscPollutantcHour::getMonitorDate)).collect(Collectors.toList());
+        List<TscPollutantcHour> collect = o3List.stream().sorted(Comparator.comparing(TscPollutantcHour::getMonitorDate)).collect(Collectors.toList());
         List<Double> O38hList = collect.stream().map(TscPollutantcHour::getO31h).collect(Collectors.toList());
         Double[] o3Arr = O38hList.stream().map(Double::valueOf).toArray(Double[]::new);
         List<Double> avg8h = O3Utils.get8Avg(o3Arr);
@@ -300,17 +301,18 @@ public class AqiUtils {
     }
 
     /**
-     * @param type
-     * @param value
+     * @param type  污染类型
+     * @param value 平均aqi
      * @Description: //TODO 计算iaqi方法
      * @Author: Jiatp
      * @Date: 2022/5/12 8:51 上午
      * @return: org.example.clear3.domain.vo.AqiVO
      */
-    public static AqiVO getAQlTable(String type, String value) throws CustomException {
+    public static AqiVO getAqiValue(String type, String value) throws CustomException {
         Map<String, Integer[]> maps = initAqlTable();
-        //空气质量分指数
+        //对比值
         Integer[] iaqi = maps.get("IAQI");
+        //找到类型的值
         Integer[] orgins = maps.get(type);
         double c = 0.0;
         try {
@@ -319,24 +321,24 @@ public class AqiUtils {
                 log.error(type + "浓度值不在允许范围之内!");
                 throw new CustomException(type + "浓度值不在允许范围之内!");
             }
+            //确定浓度的最大最小
+            for (int i = 0; i < orgins.length; i++) {
+                if (c <= orgins[i]) {
+                    c_height = orgins[i];
+                    c_low = orgins[i - 1];
+
+                    l_height = iaqi[i];
+                    l_low = iaqi[i - 1];
+                    break;
+                }
+            }
+            log.info(type + "-》浓度最大：" + c_height + "\t 最小：" + c_low);
+            log.info(type + "-》iaqi最大：" + l_height + "\t 最小：" + l_low);
         } catch (Exception e) {
             throw new CustomException("浓度值异常!");
         }
-        //确定浓度的最大最小
-        for (int i = 0; i < orgins.length; i++) {
-            if (c <= orgins[i]) {
-                c_height = orgins[i];
-                c_low = orgins[i - 1];
 
-                l_height = iaqi[i];
-                l_low = iaqi[i - 1];
-                break;
-            }
-        }
-        log.info(type + "-》浓度最大：" + c_height + "\t 最小：" + c_low);
-        log.info(type + "-》iaqi最大：" + l_height + "\t 最小：" + l_low);
-
-        //计算IAQI
+        //计算
         double a1 = l_height - l_low;
         double a2 = c_height - c_low;
         double iaqiValue = Math.ceil(a1 / a2 * (c - c_low) + l_low);

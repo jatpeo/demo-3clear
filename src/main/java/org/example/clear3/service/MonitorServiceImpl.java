@@ -3,13 +3,15 @@ package org.example.clear3.service;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.example.clear3.domain.param.BaseQueryParam;
 import org.example.clear3.domain.param.DayAverageParam;
 import org.example.clear3.domain.param.SingleTypeParam;
 import org.example.clear3.domain.param.TimeCompareParam;
+import org.example.clear3.domain.vo.AqiVO;
 import org.example.clear3.exception.CustomException;
 import org.example.clear3.mapper.TscPollutantcHourMapper;
+import org.example.clear3.util.AqiUtils;
 import org.example.clear3.util.ComCalUtil;
+import org.example.clear3.util.O3Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +26,7 @@ import java.util.stream.Collectors;
  **/
 @Service
 @Slf4j
-public class TscPollutantcServiceImpl implements TscPollutantcService {
+public class MonitorServiceImpl implements MonitorService {
 
 
     @Autowired
@@ -70,13 +72,12 @@ public class TscPollutantcServiceImpl implements TscPollutantcService {
     }
 
     /**
-     * @param groupList
+     * @param groupList 分组list
      * @Description: //TODO 处理时段对比分析空的值
      * @Author: Jiatp
      * @Date: 2022/5/13 4:56 下午
      * @return: java.util.Map<java.lang.String, java.lang.Object>
      */
-
     public List<Map> handleEmptyTimeList(List<Map> groupList) {
 
         for (int i = 0; i < groupList.size(); i++) {
@@ -101,7 +102,7 @@ public class TscPollutantcServiceImpl implements TscPollutantcService {
 
 
     /**
-     * @param params
+     * @param params 查询参数
      * @Description: //TODO 计算单个指标的浓度和iaqi
      * @Author: Jiatp
      * @Date: 2022/5/12 4:17 下午
@@ -142,7 +143,7 @@ public class TscPollutantcServiceImpl implements TscPollutantcService {
 
 
     /**
-     * @param params
+     * @param params 查询参数
      * @Description: //TODO 基于小时查询多城市的日均值 （新）
      * @Author: Jiatp
      * @Date: 2022/5/13 5:52 下午
@@ -152,9 +153,81 @@ public class TscPollutantcServiceImpl implements TscPollutantcService {
     public List<Map> queryDayAverage(DayAverageParam params) {
 
         List<Map> resultMap = pollutantcHourMapper.queryDayAverage(params);
-
         log.info(JSONUtil.toJsonStr(resultMap.size()));
+        //目标分组对象
+        String[] target = params.getTarget().split(",");
+        List<Map> result = new ArrayList<>();
+        Map<String, List<Map>> maps = resultMap.stream().sorted((e1, e2) -> {
+            return e1.get("monitordate").toString().compareTo(e2.get("monitordate").toString());
+        }).collect(Collectors.toList()).stream().collect(Collectors.groupingBy(o -> {
+            return o.get("citycode") + "," + o.get("cityname") + "," + o.get("monitordate").toString().split(" ")[0];
+        }));
+        log.info(JSONUtil.toJsonStr(maps));
+        maps.forEach((key, value) -> {
+            String cityCode = key.split(",")[0];
+            String cityName = key.split(",")[1];
+            String monitordDate = key.split(",")[2];
+            try {
+                Map<String, Object> map = calMoreCityPollution(value, cityCode, cityName, monitordDate, target);
+                //计算O3
+                result.add(map);
+            } catch (CustomException e) {
+                e.printStackTrace();
+            }
 
-        return null;
+        });
+        return result;
     }
+
+
+    /**
+     * @param value        值
+     * @param cityCode     城市code
+     * @param cityName     城市名称
+     * @param monitordDate 监测时间
+     * @param target 查询参数指标
+     * @Description: //TODO 计算多城市的日均值
+     * @Author: Jiatp
+     * @Date: 2022/5/16 1:48 上午
+     * @return: java.util.Map<java.lang.String, java.lang.Object>
+     */
+    private Map<String, Object> calMoreCityPollution(List<Map> value, String cityCode, String cityName,
+                                                     String monitordDate, String[] target) throws CustomException {
+
+        Map<String, Object> map = MapUtil.createMap(LinkedHashMap.class);
+        map.put("citycode", cityCode);
+        map.put("cityname", cityName);
+        map.put("monitorddate", monitordDate);
+        for (int i = 0; i < target.length; i++) {
+            String type = target[i];
+            if (!"o3_8h".equals(type)) {
+                double average = value.stream().mapToDouble(e -> new Double(String.valueOf(e.get(type)))).average().orElse(0);
+                String currentIType = type.split("_")[0].toUpperCase();
+                if ("pm25_1h".equals(type)) {
+                    currentIType = "PM2.5";
+                }
+                AqiVO aqiVO = AqiUtils.getAqiValue(currentIType, String.valueOf(average));
+                String rsAverage = type.equals("co_1h") ? ComCalUtil.sciCal(average, 1) : ComCalUtil.sciCal(average, 0);
+                String iAqi = type.equals("co_1h") ? ComCalUtil.sciCal(aqiVO.getIaqiValue(), 1) : ComCalUtil.sciCal(aqiVO.getIaqiValue(), 0);
+                map.put(type, rsAverage);
+                map.put(type + "_iaqi", iAqi);
+
+            }
+
+        }
+        //计算臭氧8小时最大
+        List<Double> o3List = value.stream().map(o -> {
+            return MapUtil.getDouble(o, "o3_8h");
+        }).collect(Collectors.toList());
+        Double[] array = o3List.stream().map(Double::valueOf).toArray(Double[]::new);
+        List<Double> avg = O3Utils.get8Avg(array);
+        //滑动8小时最大
+        Double maxAvg = O3Utils.get8MaxAvg(avg);
+        AqiVO aqiVO = AqiUtils.getAqiValue("O3", String.valueOf(maxAvg));
+        map.put("o3_8h", ComCalUtil.sciCal(maxAvg, 0));
+        map.put("o3_8h_iaqi", ComCalUtil.sciCal(aqiVO.getIaqiValue(), 0));
+        return map;
+    }
+
+
 }

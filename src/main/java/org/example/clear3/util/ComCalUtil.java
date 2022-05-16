@@ -1,6 +1,7 @@
 package org.example.clear3.util;
 
 import cn.hutool.core.map.MapUtil;
+import org.example.clear3.constant.AqiContants;
 import org.example.clear3.domain.TscPollutantcHour;
 import org.example.clear3.domain.vo.AqiVO;
 import org.example.clear3.exception.CustomException;
@@ -40,10 +41,10 @@ public class ComCalUtil {
         //计算平均浓度
         String result = "-";
         String iAqi = "-";
-        if (-999.0 != average) {
+        if (Double.parseDouble(AqiContants.INVAlLIDVALUE) != average) {
             //计算iaqi
             result = "co_1h".equals(target) ? sciCal(average, 1) : sciCal(average, 0);
-            AqiVO aqiVO = AqiUtils.getAQlTable(target.split("_")[0].toUpperCase(), result);
+            AqiVO aqiVO = AqiUtils.getAqiValue(target.split("_")[0].toUpperCase(), result);
             iAqi = sciCal(aqiVO.getIaqiValue(), 0);
         }
         map.put("code", cityCode);
@@ -67,7 +68,7 @@ public class ComCalUtil {
 
         Map<String, Object> map = MapUtil.newHashMap();
         double average = 0.0;
-        if ("o3_1h".equals(target)) {
+        if (AqiContants.O31H.equals(target)) {
             List<Double> O38hList = list.stream().map(o -> {
                 return Double.valueOf(o.get("o3_1h").toString());
             }).collect(Collectors.toList());
@@ -80,7 +81,7 @@ public class ComCalUtil {
             map.put(target, sciCal(average, 0));
         }
         //()
-        AqiVO aqiVO = AqiUtils.getAQlTable(target.split("_")[0].toUpperCase(), String.valueOf(average));
+        AqiVO aqiVO = AqiUtils.getAqiValue(target.split("_")[0].toUpperCase(), String.valueOf(average));
         map.put(target + "_iaqi", sciCal(aqiVO.getIaqiValue(), 0));
         return map;
 
@@ -95,15 +96,16 @@ public class ComCalUtil {
      */
     public static String sciCal(double value, int digit) {
         String result = "-999";
+        double compare = 0.5;
         try {
             double ratio = Math.pow(10, digit);
             double _num = value * ratio;
             double mod = _num % 1;
             double integer = Math.floor(_num);
             double returnNum;
-            if (mod > 0.5) {
+            if (mod > compare) {
                 returnNum = (integer + 1) / ratio;
-            } else if (mod < 0.5) {
+            } else if (mod < compare) {
                 returnNum = integer / ratio;
             } else {
                 returnNum = (integer % 2 == 0 ? integer : integer + 1) / ratio;

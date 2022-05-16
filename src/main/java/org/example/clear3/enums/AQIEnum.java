@@ -1,5 +1,7 @@
 package org.example.clear3.enums;
 
+import org.example.clear3.constant.AqiContants;
+
 /**
  * @Author Jiatp
  * @Description //TODO
@@ -28,44 +30,34 @@ public enum AQIEnum {
         return value;
     }
 
-    public void setValue(String value) {
-        this.value = value;
-    }
-
     public String getDesc() {
         return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
 
     /**
-     * 转换结果
-     *
      * @param value
-     * @return
+     * @Description: //TODO 返回aqi基本信息
+     * @Author: Jiatp
+     * @Date: 2022/5/16 5:45 下午
+     * @return: java.lang.String
      */
     public static String getName(double value) {
-        if (value >= 0 && value <= 50) {
+        if (value >= AqiContants.AQIBASEVALUE[0] && value <= AqiContants.AQIBASEVALUE[1]) {
             return AQIEnum.GREEN.desc + "," + AQIEnum.GREEN.color + "," + AQIEnum.GREEN.value;
-        } else if (value >= 51 && value <= 100) {
+        } else if (value >= AqiContants.AQIBASEVALUE[2] && value <= AqiContants.AQIBASEVALUE[3]) {
             return AQIEnum.YELLOW.desc + "," + AQIEnum.YELLOW.color + "," + AQIEnum.YELLOW.value;
-        } else if (value >= 101 && value <= 150) {
+        } else if (value >= AqiContants.AQIBASEVALUE[4] && value <= AqiContants.AQIBASEVALUE[5]) {
             return AQIEnum.ORANGE.desc + "," + AQIEnum.ORANGE.color + "," + AQIEnum.ORANGE.value;
-        } else if (value >= 151 && value <= 200) {
+        } else if (value >= AqiContants.AQIBASEVALUE[6] && value <= AqiContants.AQIBASEVALUE[7]) {
             return AQIEnum.RED.desc + "," + AQIEnum.RED.color + "," + AQIEnum.RED.value;
-        } else if (value >= 201 && value < 300) {
+        } else if (value >= AqiContants.AQIBASEVALUE[8] && value < AqiContants.AQIBASEVALUE[9]) {
             return AQIEnum.PURPLE.desc + "," + AQIEnum.PURPLE.color + "," + AQIEnum.PURPLE.value;
-        } else if (value >= 300) {
+        } else if (value >= AqiContants.AQIBASEVALUE[9]) {
             return AQIEnum.MAROON.desc + "," + AQIEnum.MAROON.color + "," + AQIEnum.MAROON.value;
         }
         return null;
