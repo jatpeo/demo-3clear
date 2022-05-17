@@ -17,7 +17,7 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
-/**
+/** 实测分析
  * @Author Jiatp
  * @Description //TODO 实测功能模块下
  * @Date 7:28 下午 2022/5/6
@@ -36,7 +36,7 @@ public class MonitorController {
     MonitorService pollutantcService;
 
 
-    /**
+    /** 时段对比分析查询
      * @Description: //TODO 时段对比分析查询
      * @Author: Jiatp
      * @Date: 2022/5/16 4:02 下午
@@ -58,7 +58,7 @@ public class MonitorController {
         }
     }
 
-    /**
+    /** 多城市单个指标的浓度值和iaqi
      * @Description: //TODO 计算多城市单个指标的浓度值和iaqi
      * @Author: Jiatp
      * @Date: 2022/5/12 7:40 下午
@@ -79,7 +79,7 @@ public class MonitorController {
             return RespBean.error(errorMessage);
         }
     }
-    /**
+    /** 多城市的日均值
      * @Description: //TODO 查询多城市的日均值 （新）
      * @Author: Jiatp
      * @Date: 2022/5/13 5:21 下午

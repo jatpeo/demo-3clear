@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -16,7 +17,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("t_sc_pollutant_c_hour")
-public class TscPollutantcHour {
+public class TscPollutantcHour implements Serializable {
 
     @TableField("monitordate")
     private Date monitorDate;

@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
-/**
+/** 基础信息
  * @Author Jiatp
  * @Description //TODO 演示预报预警系统的一些通用controller
  * @Date 9:59 上午 2022/5/6
@@ -34,7 +34,7 @@ public class AqiController {
     @Autowired
     private AqiService aqiService;
 
-   /**
+   /** 导出城市日均
     * @Description: //TODO 导出城市日均变化值
     * @Author: Jiatp
     * @Date: 2022/5/16 4:45 下午
@@ -64,7 +64,7 @@ public class AqiController {
         }
     }
 
-    /**
+    /** 计算城市日均
      * @param beginTimeStr 开始时间
      * @param endTimeStr   结束时间
      * @param cityCode     城市编码
@@ -90,7 +90,7 @@ public class AqiController {
         }
     }
 
-    /**
+    /** 多城市计算日均
      * @param beginTimeStr 开始时间
      * @param endTimeStr   结束时间
      * @param cityCode     城市编码
@@ -117,7 +117,7 @@ public class AqiController {
     }
 
 
-    /**
+    /** 计算aqi信息
      * @param type  指标
      * @param value 数值
      * @Description: //TODO 计算aqi信息

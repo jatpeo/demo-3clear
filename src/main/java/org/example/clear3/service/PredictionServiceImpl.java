@@ -31,7 +31,7 @@ public class PredictionServiceImpl implements PredictionService {
     private TscPollutantcHourMapper mapper;
 
     /**
-     * @param params
+     * @param params 查询参数
      * @Description: //TODO 城市逐日预报查询
      * @Author: Jiatp
      * @Date: 2022/5/16 11:12 上午
