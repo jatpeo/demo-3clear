@@ -332,8 +332,8 @@ public class AqiUtils {
                     break;
                 }
             }
-            log.info(type + "-》浓度最大：" + c_height + "\t 最小：" + c_low);
-            log.info(type + "-》iaqi最大：" + l_height + "\t 最小：" + l_low);
+//            log.info(type + "-》浓度最大：" + c_height + "\t 最小：" + c_low);
+//            log.info(type + "-》iaqi最大：" + l_height + "\t 最小：" + l_low);
         } catch (Exception e) {
             throw new CustomException("浓度值异常!");
         }

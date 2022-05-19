@@ -13,11 +13,15 @@ import javax.validation.constraints.NotBlank;
 @Data
 public class ConsultationReportParam {
 
-    //起报时间
+    /**
+     * TODO 起报时间
+     **/
     @NotBlank(message = "起报时间不能为空")
     private String predictiontime;
 
-    //起报开始时间
+    /**
+     * TODO 起报开始时间
+     **/
     @NotBlank(message = "监测时间不能为空")
     private String datadate;
 
@@ -56,11 +60,6 @@ public class ConsultationReportParam {
      **/
     @NotBlank(message = "pm2.5最大不能为空")
     private String pm25Max;
-
-
-
-
-
 
 
 }

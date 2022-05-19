@@ -6,7 +6,6 @@ import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.example.clear3.constant.AqiContants;
@@ -54,7 +53,7 @@ public class ExcelUtils {
             if (AqiContants.PM10.equals(value)) {
                 HSSFCellStyle style = wb.createCellStyle();
                 style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+               // style.setFillPattern(CellStyle.SOLID_FOREGROUND);
                 style.setBorderTop(BorderStyle.THIN);
                 style.setBorderBottom(BorderStyle.THIN);
                 style.setBorderLeft(BorderStyle.THIN);
@@ -63,7 +62,7 @@ public class ExcelUtils {
             } else if (AqiContants.PM25.equals(value)) {
                 HSSFCellStyle style = wb.createCellStyle();
                 style.setFillForegroundColor(IndexedColors.ORANGE.getIndex());
-                style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+              //  style.setFillPattern(CellStyle.SOLID_FOREGROUND);
                 style.setBorderTop(BorderStyle.THIN);
                 style.setBorderBottom(BorderStyle.THIN);
                 style.setBorderLeft(BorderStyle.THIN);
@@ -72,7 +71,7 @@ public class ExcelUtils {
             } else if (AqiContants.O3.equals(value)) {
                 HSSFCellStyle style = wb.createCellStyle();
                 style.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex());
-                style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+              //  style.setFillPattern(CellStyle.SOLID_FOREGROUND);
                 style.setBorderTop(BorderStyle.THIN);
                 style.setBorderBottom(BorderStyle.THIN);
                 style.setBorderLeft(BorderStyle.THIN);
@@ -81,7 +80,7 @@ public class ExcelUtils {
             } else if (AqiContants.NO2.equals(value)) {
                 HSSFCellStyle style = wb.createCellStyle();
                 style.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
-                style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+             //   style.setFillPattern(CellStyle.SOLID_FOREGROUND);
                 style.setBorderTop(BorderStyle.THIN);
                 style.setBorderBottom(BorderStyle.THIN);
                 style.setBorderLeft(BorderStyle.THIN);
@@ -90,7 +89,7 @@ public class ExcelUtils {
             } else if (AqiContants.SO2.equals(value)) {
                 HSSFCellStyle style = wb.createCellStyle();
                 style.setFillForegroundColor(IndexedColors.RED.getIndex());
-                style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+              //  style.setFillPattern(CellStyle.SOLID_FOREGROUND);
                 style.setBorderTop(BorderStyle.THIN);
                 style.setBorderBottom(BorderStyle.THIN);
                 style.setBorderLeft(BorderStyle.THIN);
@@ -99,7 +98,7 @@ public class ExcelUtils {
             } else if (AqiContants.CO.equals(value)) {
                 HSSFCellStyle style = wb.createCellStyle();
                 style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-                style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+              //  style.setFillPattern(CellStyle.SOLID_FOREGROUND);
                 style.setBorderTop(BorderStyle.THIN);
                 style.setBorderBottom(BorderStyle.THIN);
                 style.setBorderLeft(BorderStyle.THIN);
@@ -108,7 +107,7 @@ public class ExcelUtils {
             } else {
                 HSSFCellStyle style = wb.createCellStyle();
                 style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-                style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+             //   style.setFillPattern(CellStyle.SOLID_FOREGROUND);
                 style.setBorderTop(BorderStyle.THIN);
                 style.setBorderBottom(BorderStyle.THIN);
                 style.setBorderLeft(BorderStyle.THIN);
@@ -135,7 +134,7 @@ public class ExcelUtils {
             //绿色
             HSSFCellStyle style = wb.createCellStyle();
             style.setFillForegroundColor(IndexedColors.GREEN.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+           // style.setFillPattern(CellStyle.SOLID_FOREGROUND);
             style.setBorderTop(BorderStyle.THIN);
             style.setBorderBottom(BorderStyle.THIN);
             style.setBorderLeft(BorderStyle.THIN);
@@ -145,7 +144,7 @@ public class ExcelUtils {
             //yello
             HSSFCellStyle style = wb.createCellStyle();
             style.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+            //style.setFillPattern(CellStyle.SOLID_FOREGROUND);
             style.setBorderTop(BorderStyle.THIN);
             style.setBorderBottom(BorderStyle.THIN);
             style.setBorderLeft(BorderStyle.THIN);
@@ -155,7 +154,7 @@ public class ExcelUtils {
             //orange
             HSSFCellStyle style = wb.createCellStyle();
             style.setFillForegroundColor(IndexedColors.ORANGE.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+           // style.setFillPattern(CellStyle.SOLID_FOREGROUND);
             style.setBorderTop(BorderStyle.THIN);
             style.setBorderBottom(BorderStyle.THIN);
             style.setBorderLeft(BorderStyle.THIN);
@@ -165,7 +164,7 @@ public class ExcelUtils {
             //red
             HSSFCellStyle style = wb.createCellStyle();
             style.setFillForegroundColor(IndexedColors.RED.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+         //   style.setFillPattern(CellStyle.SOLID_FOREGROUND);
             style.setBorderTop(BorderStyle.THIN);
             style.setBorderBottom(BorderStyle.THIN);
             style.setBorderLeft(BorderStyle.THIN);
@@ -175,7 +174,7 @@ public class ExcelUtils {
             //purple
             HSSFCellStyle style = wb.createCellStyle();
             style.setFillForegroundColor(IndexedColors.LAVENDER.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+          //  style.setFillPattern(CellStyle.SOLID_FOREGROUND);
             style.setBorderTop(BorderStyle.THIN);
             style.setBorderBottom(BorderStyle.THIN);
             style.setBorderLeft(BorderStyle.THIN);
@@ -185,7 +184,7 @@ public class ExcelUtils {
             //褐色
             HSSFCellStyle style = wb.createCellStyle();
             style.setFillForegroundColor(IndexedColors.MAROON.getIndex());
-            style.setFillPattern(CellStyle.SOLID_FOREGROUND);
+          //  style.setFillPattern(CellStyle.SOLID_FOREGROUND);
             style.setBorderTop(BorderStyle.THIN);
             style.setBorderBottom(BorderStyle.THIN);
             style.setBorderLeft(BorderStyle.THIN);

@@ -70,16 +70,16 @@ public class AqiServiceImpl implements AqiService {
         font.setBold(true);
         font.setColor(IndexedColors.BLACK.getIndex());
         style.setFont(font);
-        style.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+       // style.setAlignment(XSSFCellStyle.ALIGN_CENTER);
         style.setBorderTop(BorderStyle.THIN);
         style.setBorderBottom(BorderStyle.THIN);
         style.setBorderLeft(BorderStyle.THIN);
         style.setBorderRight(BorderStyle.THIN);
         HSSFCellStyle style2 = wb.createCellStyle();
         //文字水平居中
-        style2.setAlignment(XSSFCellStyle.ALIGN_CENTER);
+      //  style2.setAlignment(XSSFCellStyle.ALIGN_CENTER);
         //文字垂直居中
-        style2.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
+      //  style2.setVerticalAlignment(XSSFCellStyle.VERTICAL_CENTER);
         HSSFRow row = sheet.createRow(0);
         HSSFCell cell1 = row.createCell(0);
         HSSFCell cell2 = row.createCell(1);
@@ -118,10 +118,6 @@ public class AqiServiceImpl implements AqiService {
         wb.write(outputStream);
         outputStream.flush();
         outputStream.close();
-
-        OutputStream output = response.getOutputStream();
-        wb.write(output);
-        output.close();
 
     }
 

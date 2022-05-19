@@ -176,6 +176,7 @@ public class MonitorServiceImpl implements MonitorService {
             }
 
         });
+
         return result;
     }
 
@@ -185,7 +186,7 @@ public class MonitorServiceImpl implements MonitorService {
      * @param cityCode     城市code
      * @param cityName     城市名称
      * @param monitordDate 监测时间
-     * @param target 查询参数指标
+     * @param target       查询参数指标
      * @Description: //TODO 计算多城市的日均值
      * @Author: Jiatp
      * @Date: 2022/5/16 1:48 上午
@@ -198,6 +199,8 @@ public class MonitorServiceImpl implements MonitorService {
         map.put("citycode", cityCode);
         map.put("cityname", cityName);
         map.put("monitorddate", monitordDate);
+        double aqi = 0;
+        String pollution = null;
         for (int i = 0; i < target.length; i++) {
             String type = target[i];
             if (!"o3_8h".equals(type)) {
@@ -209,6 +212,10 @@ public class MonitorServiceImpl implements MonitorService {
                 AqiVO aqiVO = AqiUtils.getAqiValue(currentIType, String.valueOf(average));
                 String rsAverage = type.equals("co_1h") ? ComCalUtil.sciCal(average, 1) : ComCalUtil.sciCal(average, 0);
                 String iAqi = type.equals("co_1h") ? ComCalUtil.sciCal(aqiVO.getIaqiValue(), 1) : ComCalUtil.sciCal(aqiVO.getIaqiValue(), 0);
+                if (Double.parseDouble(iAqi) > aqi) {
+                    aqi = Double.parseDouble(iAqi);
+                    pollution = type;
+                }
                 map.put(type, rsAverage);
                 map.put(type + "_iaqi", iAqi);
 
@@ -226,6 +233,14 @@ public class MonitorServiceImpl implements MonitorService {
         AqiVO aqiVO = AqiUtils.getAqiValue("O3", String.valueOf(maxAvg));
         map.put("o3_8h", ComCalUtil.sciCal(maxAvg, 0));
         map.put("o3_8h_iaqi", ComCalUtil.sciCal(aqiVO.getIaqiValue(), 0));
+        //算出当天的aqi和手误
+        if (Double.parseDouble(ComCalUtil.sciCal(aqiVO.getIaqiValue(), 0)) > aqi) {
+            aqi = Double.parseDouble(ComCalUtil.sciCal(aqiVO.getIaqiValue(), 0));
+            pollution = "o3_8h";
+        }
+        map.put("primary_pollutant", pollution);
+        map.put("aqi", ComCalUtil.sciCal(aqi, 0));
+        map.put("aqi_level", aqiVO.getLevelDesp());
         return map;
     }
 
