@@ -36,11 +36,11 @@ public class ConsultationController {
     @Autowired
     private ConsultationService consultationService;
 
-    /**
-     * @param beginDataDate
-     * @param endDataDate
-     * @param cityCode
-     * @param response
+    /** 人工预报导出
+     * @param beginDataDate 开始时间
+     * @param endDataDate   结束时间
+     * @param cityCode      城市编码
+     * @param response      响应对象
      * @Description: //TODO 人工预报导出
      * @Author: Jiatp
      * @Date: 2022/5/19 2:58 下午
@@ -65,7 +65,7 @@ public class ConsultationController {
         }
     }
 
-    /**
+    /** 人工预报评估
      * @param params 查询参数
      * @Description: //TODO 人工预报评估
      * @Author: Jiatp
@@ -89,7 +89,6 @@ public class ConsultationController {
 
     /**
      * 人工上报数据
-     *
      * @param params
      * @Description: //TODO 人工上报数据
      * @Author: Jiatp
